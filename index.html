@@ -6,6 +6,7 @@
     <script src="src/boot.js"></script>
     <script src="src/preload.js"></script>
     <script src="src/gametitle.js"></script>
+    <script src="src/game.js"></script>
 
     <style>
         body {
@@ -18,7 +19,9 @@
             game.state.add("Boot", boot);
             game.state.add("Preload", preload);
             game.state.add("GameTitle", gameTitle);
+            game.state.add("Play", gamePlay);
             game.state.start("Boot");
+            //game.state.start("Play");
         })();
     </script>
 </head>
