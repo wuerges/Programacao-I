@@ -95,6 +95,9 @@ gameTitle.prototype = {
     },
     playTheGame: function () {
 
+        this.state.start("Play");
+        console.log("Clicked Play");
+
     },
     showInfo: function () {
         // diable the sound and the leaderboard buttons
