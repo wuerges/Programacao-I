@@ -86,9 +86,10 @@ gamePlay.prototype = {
         this.addPole(nextPolePosition);
     },
     addPole:function(poleX){
-        if(poleX<this.width*2){
+//        if(poleX<this.width*2){
+        if(true) {
             placedPoles++;
-//            var pole = new Pole(this,poleX,this.rnd.between(250,380));
+            var pole = new Pole(this,poleX,this.rnd.between(250,380));
 //            var pole = new Pole(gamePlay,poleX,50);
             this.add.existing(pole);
             pole.anchor.set(0.5,0);
