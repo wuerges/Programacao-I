@@ -37,7 +37,7 @@ gamePlay.prototype = {
         scoreText = this.add.text(10,10,"-",{
             font:"bold 16px Arial"
         });
-        updateScore();
+        this.updateScore();
         this.stage.backgroundColor = "#87CEEB";
         this.physics.startSystem(Phaser.Physics.ARCADE);
         player = this.add.sprite(80,0,"player");
@@ -45,89 +45,89 @@ gamePlay.prototype = {
         player.lastPole = 1;
         this.physics.arcade.enable(player);
         player.body.gravity.y = playerGravity;
-        this.input.onDown.add(prepareToJump, this);
-        addPole(80);
+        this.input.onDown.add(this.prepareToJump, this);
+        this.addPole(80);
     },
     update:function(){
-        this.physics.arcade.collide(player, poleGroup, checkLanding);
+        this.physics.arcade.collide(player, poleGroup, this.checkLanding);
         if(player.y>this.height){
             die();
         }
-    }
-}
-//this.state.add("Play",play);
-//this.state.start("Play");
-function updateScore(){
-    scoreText.text = "Pontos: "+score+"\nMelhor Pontuacao: "+topScore;
-}
-function prepareToJump(){
-    if(player.body.velocity.y==0){
-        powerBar = game.add.sprite(player.x,player.y-50,"powerbar");
-        powerBar.width = 0;
-        powerTween = game.add.tween(powerBar).to({
-            width:100
-        }, 1000, "Linear",true);
-        game.input.onDown.remove(prepareToJump, this);
-        game.input.onUp.add(jump, this);
-    }
-}
-function jump(){
-    playerJumpPower= -powerBar.width*3-100
-    powerBar.destroy();
-    game.tweens.removeAll();
-    player.body.velocity.y = playerJumpPower*2;
-    playerJumping = true;
-    powerTween.stop();
-    game.input.onUp.remove(jump, this);
-}
-function addNewPoles(){
-    var maxPoleX = 0;
-    poleGroup.forEach(function(item) {
-        maxPoleX = Math.max(item.x,maxPoleX)
-    });
-    var nextPolePosition = maxPoleX + game.rnd.between(minPoleGap,maxPoleGap);
-    addPole(nextPolePosition);
-}
-function addPole(poleX){
-    if(poleX<game.width*2){
-        placedPoles++;
-        var pole = new Pole(game,poleX,game.rnd.between(250,380));
-        game.add.existing(pole);
-        pole.anchor.set(0.5,0);
-        poleGroup.add(pole);
-        var nextPolePosition = poleX + game.rnd.between(minPoleGap,maxPoleGap);
-        addPole(nextPolePosition);
-    }
-}
-function die(){
-    localStorage.setItem("topFlappyScore",Math.max(score,topScore));
-    game.state.start("Play");
-}
-function checkLanding(n,p){
-    if(p.y>=n.y+n.height/2){
-        var border = n.x-p.x
-        if(Math.abs(border)>20){
-            n.body.velocity.x=border*2;
-            n.body.velocity.y=-200;
+    },
+    updateScore:function(){
+        scoreText.text = "Pontos: "+score+"\nMelhor Pontuacao: "+topScore;
+    },
+    prepareToJump:function(){
+        if(player.body.velocity.y==0){
+            powerBar = game.add.sprite(player.x,player.y-50,"powerbar");
+            powerBar.width = 0;
+            powerTween = game.add.tween(powerBar).to({
+                width:100
+            }, 1000, "Linear",true);
+            game.input.onDown.remove(prepareToJump, this);
+            game.input.onUp.add(jump, this);
         }
-        var poleDiff = p.poleNumber-n.lastPole;
-        if(poleDiff>0){
-            score+= Math.pow(2,poleDiff);
-            updateScore();
-            n.lastPole= p.poleNumber;
-        }
-        if(playerJumping){
-            playerJumping = false;
-            game.input.onDown.add(prepareToJump, this);
-        }
-    }
-    else{
-        playerFallingDown = true;
+    },
+    jump:function(){
+        playerJumpPower= -powerBar.width*3-100
+        powerBar.destroy();
+        game.tweens.removeAll();
+        player.body.velocity.y = playerJumpPower*2;
+        playerJumping = true;
+        powerTween.stop();
+        game.input.onUp.remove(jump, this);
+    },
+    addNewPoles:function(){
+        var maxPoleX = 0;
         poleGroup.forEach(function(item) {
-            item.body.velocity.x = 0;
+            maxPoleX = Math.max(item.x,maxPoleX)
         });
+        var nextPolePosition = maxPoleX + game.rnd.between(minPoleGap,maxPoleGap);
+        this.addPole(nextPolePosition);
+    },
+    addPole:function(poleX){
+        if(poleX<this.width*2){
+            placedPoles++;
+//            var pole = new Pole(this,poleX,this.rnd.between(250,380));
+//            var pole = new Pole(gamePlay,poleX,50);
+            this.add.existing(pole);
+            pole.anchor.set(0.5,0);
+            poleGroup.add(pole);
+            var nextPolePosition = poleX + this.rnd.between(minPoleGap,maxPoleGap);
+            this.addPole(nextPolePosition);
+        }
+    },
+    die:function(){
+        localStorage.setItem("topFlappyScore",Math.max(score,topScore));
+        gamePlay.state.start("Play");
+    },
+    checkLanding:function(n,p){
+        if(p.y>=n.y+n.height/2){
+            var border = n.x-p.x
+            if(Math.abs(border)>20){
+                n.body.velocity.x=border*2;
+                n.body.velocity.y=-200;
+            }
+            var poleDiff = p.poleNumber-n.lastPole;
+            if(poleDiff>0){
+                score+= Math.pow(2,poleDiff);
+                updateScore();
+                n.lastPole= p.poleNumber;
+            }
+            if(playerJumping){
+                playerJumping = false;
+                game.input.onDown.add(prepareToJump, this);
+            }
+        }
+        else{
+            playerFallingDown = true;
+            poleGroup.forEach(function(item) {
+                item.body.velocity.x = 0;
+            });
+        }
     }
 }
+
 Pole = function (game, x, y) {
     Phaser.Sprite.call(this, game, x, y, "pole");
     game.physics.enable(this, Phaser.Physics.ARCADE);
